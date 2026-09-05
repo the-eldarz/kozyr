@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Куэзыр</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --felt:#1F4536;
+    --felt-dark:#152F26;
+    --felt-light:#2B5A45;
+    --gold:#C9A24B;
+    --gold-light:#E4C878;
+    --card-face:#F7F0E1;
+    --ink:#241812;
+    --panel:#241108;
+    --panel-light:#3A2013;
+    --text:#F7F0E1;
+    --text-dim:#C9BBA8;
+    --red:#A8342A;
+    --shadow:rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      radial-gradient(circle at 50% 0%, var(--felt-light), var(--felt) 55%, var(--felt-dark) 100%);
+    color:var(--text);
+    min-height:100vh;
+    overflow-x:hidden;
+    user-select:none;
+  }
+  h1,h2,h3,.serif{font-family:'PT Serif',Georgia,serif;}
+  button{font-family:inherit;}
+  .screen{
+    min-height:100vh;
+    display:none;
+    flex-direction:column;
+    padding:20px 16px 28px;
+    max-width:480px;
+    margin:0 auto;
+  }
+  .screen.active{display:flex;}
+  .brand{
+    text-align:center;
+    margin:18px 0 8px;
+  }
+  .brand h1{
+    font-size:2.6rem;
+    margin:0;
+    letter-spacing:1px;
+    color:var(--gold-light);
+    text-shadow:0 2px 10px rgba(0,0,0,.5);
+  }
+  .brand p{
+    margin:4px 0 0;
+    color:var(--text-dim);
+    font-size:.85rem;
+    letter-spacing:.5px;
+  }
+  .ornament{
+    width:80px;height:2px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    margin:14px auto 22px;
+  }
+  .menu-list{
+    display:flex;flex-direction:column;gap:12px;
+    margin-top:8px;
+  }
+  .btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;
+    background:var(--panel-light);
+    border:1px solid rgba(201,162,75,.35);
+    color:var(--text);
+    padding:16px 18px;
+    border-radius:14px;
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:transform .12s ease, background .12s ease, border-color .12s ease;
+    box-shadow:0 4px 14px var(--shadow);
+  }
+  .btn:active{transform:scale(.97);}
+  .btn.primary{
+    background:linear-gradient(180deg,var(--gold-light),var(--gold));
+    color:var(--panel);
+    border:none;
+  }
+  .btn.ghost{
+    background:transparent;
+    border:1px solid rgba(247,240,225,.25);
+    box-shadow:none;
+  }
+  .btn.small{padding:10px 14px;font-size:.85rem;border-radius:10px;}
+  .btn:disabled{opacity:.4;cursor:default;}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .topbar h2{margin:0;font-size:1.3rem;color:var(--gold-light);}
+  .iconbtn{
+    background:rgba(0,0,0,.25);
+    border:1px solid rgba(201,162,75,.3);
+    color:var(--text);
+    width:38px;height:38px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.1rem;cursor:pointer;
+  }
+  .card-panel{
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(201,162,75,.25);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .field-label{
+    font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--text-dim);margin-bottom:8px;display:block;
+  }
+  .text-input{
+    width:100%;
+    background:rgba(0,0,0,.3);
+    border:1px solid rgba(201,162,75,.35);
+    color:var(--text);
+    padding:12px 14px;
+    border-radius:10px;
+    font-size:1rem;
+    margin-bottom:4px;
+  }
+  .avatar-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;
+  }
+  .avatar-opt{
+    aspect-ratio:1;
+    border-radius:14px;
+    background:var(--felt-light);
+    border:2px solid transparent;
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;cursor:pointer;
+  }
+  .avatar-opt.selected{
+    border-color:var(--gold-light);
+    background:var(--felt);
+    box-shadow:0 0 0 3px rgba(201,162,75,.25) inset;
+  }
+  .seg{
+    display:flex;background:rgba(0,0,0,.3);border-radius:12px;padding:4px;gap:4px;
+  }
+  .seg button{
+    flex:1;border:none;background:transparent;color:var(--text-dim);
+    padding:10px;border-radius:9px;font-weight:600;cursor:pointer;font-size:.9rem;
+  }
+  .seg button.active{background:var(--gold);color:var(--panel);}
+  .stepper{
+    display:flex;align-items:center;justify-content:center;gap:18px;margin:14px 0;
+  }
+  .stepper button{
+    width:44px;height:44px;border-radius:50%;
+    border:1px solid rgba(201,162,75,.4);
+    background:rgba(0,0,0,.25);color:var(--text);font-size:1.3rem;cursor:pointer;
+  }
+  .stepper .val{font-size:1.6rem;font-weight:700;min-width:30px;text-align:center;color:var(--gold-light);}
+  .spacer{flex:1;}
+  .rules-text{
+    font-size:.92rem;line-height:1.55;color:var(--text-dim);
+  }
+  .rules-text b{color:var(--text);}
+
+  /* ---------- GAME BOARD ---------- */
+  #gameScreen{padding:10px 8px 8px;max-width:520px;}
+  .game-topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:4px 8px;font-size:.8rem;color:var(--text-dim);
+  }
+  .opp-row{
+    display:flex;justify-content:center;gap:10px;flex-wrap:wrap;
+    padding:6px 0;
+  }
+  .opp{
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    background:rgba(0,0,0,.2);
+    border:1px solid rgba(201,162,75,.2);
+    border-radius:12px;padding:6px 10px;
+    font-size:.72rem;color:var(--text-dim);
+    position:relative;
+  }
+  .opp.active-turn{border-color:var(--gold);box-shadow:0 0 10px rgba(201,162,75,.4);}
+  .opp .av{font-size:1.3rem;}
+  .opp .cnt{
+    background:var(--panel);color:var(--gold-light);
+    border-radius:8px;padding:1px 6px;font-weight:700;font-size:.7rem;
+  }
+  .board-mid{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:190px; padding:6px 0;
+  }
+  .deck-row{
+    display:flex;align-items:center;gap:14px;margin-bottom:10px;
+  }
+  .deck-stack{
+    position:relative;width:46px;height:64px;
+  }
+  .mini-card{
+    width:40px;height:58px;border-radius:6px;
+    background:linear-gradient(135deg,#4a2e18,#241108);
+    border:1px solid var(--gold);
+    position:absolute;top:0;left:0;
+    box-shadow:1px 1px 4px var(--shadow);
+  }
+  .trump-card{
+    width:42px;height:60px;border-radius:6px;background:var(--card-face);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    font-weight:700;color:var(--ink);font-size:.95rem;
+    border:1px solid rgba(0,0,0,.2);
+    transform:rotate(90deg);
+    margin-left:6px;
+  }
+  .deck-count{font-size:.7rem;color:var(--text-dim);text-align:center;margin-top:2px;}
+  .table-area{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;
+    min-height:90px;width:100%;
+  }
+  .pair{position:relative;width:52px;height:74px;}
+  .card{
+    width:52px;height:74px;border-radius:8px;
+    background:var(--card-face);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-weight:700;font-size:1.1rem;color:var(--ink);
+    box-shadow:0 3px 8px var(--shadow);
+    border:1px solid rgba(0,0,0,.15);
+    cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .card.red{color:var(--red);}
+  .card .suit{font-size:1.3rem;line-height:1;}
+  .card.on-table{position:absolute;top:0;left:0;cursor:default;}
+  .card.defend-card{top:14px;left:14px;}
+  .card.selected{transform:translateY(-10px);box-shadow:0 8px 16px rgba(0,0,0,.5);}
+  .card.playable:hover{transform:translateY(-6px);}
+  .hand-wrap{
+    margin-top:auto;
+  }
+  .hand-label{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:0 4px 4px;font-size:.75rem;color:var(--text-dim);
+  }
+  .hand{
+    display:flex;justify-content:center;gap:-10px;
+    padding:6px 0 4px;overflow-x:auto;
+    min-height:96px;
+  }
+  .hand .card{margin-left:-16px;flex-shrink:0;}
+  .hand .card:first-child{margin-left:0;}
+  .action-row{
+    display:flex;gap:10px;justify-content:center;padding:8px 4px 2px;
+  }
+  .msg-banner{
+    text-align:center;font-size:.85rem;color:var(--gold-light);
+    min-height:18px;margin-bottom:2px;
+  }
+
+  /* pass-device overlay */
+  .overlay{
+    position:fixed;inset:0;background:rgba(10,6,3,.96);
+    display:none;align-items:center;justify-content:center;flex-direction:column;
+    z-index:50;text-align:center;padding:20px;
+  }
+  .overlay.active{display:flex;}
+  .overlay .av-big{font-size:3.5rem;margin-bottom:14px;}
+  .overlay h3{margin:0 0 6px;color:var(--gold-light);}
+  .overlay p{color:var(--text-dim);margin:0 0 22px;}
+
+  /* result overlay */
+  .result-card{
+    background:var(--panel-light);border:1px solid var(--gold);
+    border-radius:18px;padding:26px 22px;text-align:center;max-width:320px;
+  }
+  .result-card h2{color:var(--gold-light);margin:0 0 6px;}
+  .result-card p{color:var(--text-dim);margin:0 0 20px;}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--panel-light);border:1px solid var(--gold);
+    padding:10px 18px;border-radius:20px;font-size:.85rem;
+    opacity:0;pointer-events:none;transition:opacity .3s ease;z-index:60;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- ============ MAIN MENU ============ -->
+<div class="screen active" id="menuScreen">
+  <div class="brand">
+    <h1 id="t_title">Куэзыр</h1>
+    <p id="t_subtitle">карточная игра</p>
+  </div>
+  <div class="ornament"></div>
+  <div class="menu-list">
+    <button class="btn primary" onclick="go('playModeScreen')">🃏 <span id="t_menuPlay">Играть</span></button>
+    <button class="btn" onclick="go('settingsScreen')">⚙️ <span id="t_menuSettings">Настройки</span></button>
+    <button class="btn" onclick="go('profileScreen')">👤 <span id="t_menuProfile">Профиль</span></button>
+    <button class="btn" onclick="go('rulesScreen')">📜 <span id="t_menuRules">Правила</span></button>
+  </div>
+  <div class="spacer"></div>
+  <div class="card-panel" style="display:flex;align-items:center;gap:12px;">
+    <div class="av" id="menuAvatar" style="font-size:1.8rem;"></div>
+    <div>
+      <div style="font-weight:700;" id="menuNickname"></div>
+      <div style="font-size:.75rem;color:var(--text-dim);" id="t_menuHint">твой профиль</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PLAY MODE ============ -->
+<div class="screen" id="playModeScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('menuScreen')">←</button>
+    <h2 id="t_playModeTitle">Играть</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="menu-list">
+    <button class="btn primary" onclick="go('botsSetupScreen')">🤖 <span id="t_vsBots">Против ботов</span></button>
+    <button class="btn" onclick="go('localSetupScreen')">📱 <span id="t_localPlay">Локально (один телефон)</span></button>
+  </div>
+</div>
+
+<!-- ============ BOTS SETUP ============ -->
+<div class="screen" id="botsSetupScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('playModeScreen')">←</button>
+    <h2 id="t_botsSetupTitle">Против ботов</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="card-panel">
+    <span class="field-label" id="t_botCountLabel">Количество ботов</span>
+    <div class="stepper">
+      <button onclick="changeBots(-1)">−</button>
+      <div class="val" id="botCountVal">1</div>
+      <button onclick="changeBots(1)">+</button>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn primary" onclick="startGame('bots')" id="t_startGame">Начать игру</button>
+</div>
+
+<!-- ============ LOCAL SETUP ============ -->
+<div class="screen" id="localSetupScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('playModeScreen')">←</button>
+    <h2 id="t_localSetupTitle">Локальная игра</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="card-panel">
+    <span class="field-label" id="t_playerCountLabel">Количество игроков</span>
+    <div class="stepper">
+      <button onclick="changePlayers(-1)">−</button>
+      <div class="val" id="playerCountVal">2</div>
+      <button onclick="changePlayers(1)">+</button>
+    </div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn primary" onclick="startGame('local')" id="t_startGame2">Начать игру</button>
+</div>
+
+<!-- ============ SETTINGS ============ -->
+<div class="screen" id="settingsScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('menuScreen')">←</button>
+    <h2 id="t_settingsTitle">Настройки</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="card-panel">
+    <span class="field-label" id="t_langLabel">Язык интерфейса</span>
+    <div class="seg">
+      <button id="langRuBtn" onclick="setLang('ru')">Русский</button>
+      <button id="langKbdBtn" onclick="setLang('kbd')">Къэбэрдейбзэ</button>
+    </div>
+  </div>
+  <p style="font-size:.75rem;color:var(--text-dim);padding:0 4px;" id="t_langNote">
+    Перевод на кабардинский язык — черновой и может содержать неточности.
+  </p>
+</div>
+
+<!-- ============ PROFILE ============ -->
+<div class="screen" id="profileScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('menuScreen')">←</button>
+    <h2 id="t_profileTitle">Профиль</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="card-panel">
+    <span class="field-label" id="t_nicknameLabel">Никнейм</span>
+    <input type="text" class="text-input" id="nicknameInput" maxlength="16" placeholder="Игрок">
+  </div>
+  <div class="card-panel">
+    <span class="field-label" id="t_avatarLabel">Аватар</span>
+    <div class="avatar-grid" id="avatarGrid"></div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn primary" onclick="saveProfile()" id="t_saveProfile">Сохранить</button>
+</div>
+
+<!-- ============ RULES ============ -->
+<div class="screen" id="rulesScreen">
+  <div class="topbar">
+    <button class="iconbtn" onclick="go('menuScreen')">←</button>
+    <h2 id="t_rulesTitle">Правила</h2>
+    <div style="width:38px;"></div>
+  </div>
+  <div class="card-panel rules-text" id="rulesBody"></div>
+</div>
+
+<!-- ============ GAME SCREEN ============ -->
+<div class="screen" id="gameScreen">
+  <div class="game-topbar">
+    <button class="iconbtn" onclick="confirmExit()">←</button>
+    <div id="gameStatusLabel"></div>
+    <button class="iconbtn" onclick="toggleRulesPopup()">?</button>
+  </div>
+  <div class="opp-row" id="oppRow"></div>
+  <div class="board-mid">
+    <div class="deck-row">
+      <div class="deck-stack" id="deckStack"></div>
+      <div class="trump-card" id="trumpCardEl"></div>
+    </div>
+    <div class="deck-count" id="deckCountLabel"></div>
+    <div class="msg-banner" id="msgBanner"></div>
+    <div class="table-area" id="tableArea"></div>
+  </div>
+  <div class="hand-wrap">
+    <div class="hand-label">
+      <div><span id="handOwnerLabel"></span></div>
+      <div id="handCountLabel"></div>
+    </div>
+    <div class="hand" id="handArea"></div>
+    <div class="action-row">
+      <button class="btn small" id="takeBtn" onclick="playerTake()" style="display:none;"></button>
+      <button class="btn small primary" id="doneBtn" onclick="playerDone()" style="display:none;"></button>
+      <button class="btn small ghost" id="passBtn" onclick="playerPass()" style="display:none;"></button>
+    </div>
+  </div>
+</div>
+
+<!-- pass-device overlay -->
+<div class="overlay" id="passOverlay">
+  <div class="av-big" id="passAvatar"></div>
+  <h3 id="passName"></h3>
+  <p id="t_passHint">Передайте телефон этому игроку</p>
+  <button class="btn primary" onclick="revealHand()" id="t_passReveal">Показать карты</button>
+</div>
+
+<!-- result overlay -->
+<div class="overlay" id="resultOverlay">
+  <div class="result-card">
+    <h2 id="resultTitle"></h2>
+    <p id="resultSub"></p>
+    <button class="btn primary" onclick="restartToMenu()" id="t_backToMenu">В меню</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   I18N
+   ⚠️ Кабардинские строки — черновой перевод (машинный/приблизительный).
+   Замените значения в TRANSLATIONS.kbd на проверенные носителем языка.
+========================================================= */
+const TRANSLATIONS = {
+  ru: {
+    title:"Куэзыр", subtitle:"карточная игра",
+    menuPlay:"Играть", menuSettings:"Настройки", menuProfile:"Профиль", menuRules:"Правила",
+    menuHint:"твой профиль",
+    playModeTitle:"Играть", vsBots:"Против ботов", localPlay:"Локально (один телефон)",
+    botsSetupTitle:"Против ботов", botCountLabel:"Количество ботов", startGame:"Начать игру",
+    localSetupTitle:"Локальная игра", playerCountLabel:"Количество игроков", startGame2:"Начать игру",
+    settingsTitle:"Настройки", langLabel:"Язык интерфейса",
+    langNote:"Перевод на кабардинский язык — черновой и может содержать неточности.",
+    profileTitle:"Профиль", nicknameLabel:"Никнейм", avatarLabel:"Аватар", saveProfile:"Сохранить",
+    rulesTitle:"Правила",
+    rulesBody:"<b>Цель игры</b> — избавиться от всех карт первым. Тот, у кого остались карты, когда у всех остальных они закончились — «дурак».<br><br>" +
+      "<b>Колода</b> — 36 карт (от шестёрки до туза). Каждому раздаётся по 6 карт, следующая карта колоды открывается — её масть становится козырем.<br><br>" +
+      "<b>Ход</b>: атакующий кладёт карту. Защищающийся должен побить её картой той же масти старше по достоинству, либо любым козырем (если атакующая карта не козырь). Козырь бьётся только старшим козырем.<br><br>" +
+      "Если защита удалась, атакующий может подкинуть ещё карту(-ы) того же достоинства, что уже есть на столе (не больше 6 карт за раз и не больше карт в руке защищающегося). Когда атакующий нажимает «Бита» — карты уходят в отбой, ход переходит дальше.<br><br>" +
+      "Если отбиться нечем — защищающийся берёт все карты со стола себе в руку, и ход переходит к следующему игроку.<br><br>" +
+      "После каждого раунда все игроки добирают карты из колоды до 6 штук, начиная с атакующего. Когда колода заканчивается, игра продолжается картами на руках. Последний игрок с картами на руках — «дурак».",
+    yourTurn:"Ваш ход", attack:"Ходите", defend:"Отбейтесь", take:"Взять", beatDone:"Бита", pass:"Пас",
+    deck:"в колоде", trump:"козырь",
+    you:"Вы", bot:"Бот", player:"Игрок",
+    passHint:"Передайте телефон этому игроку", passReveal:"Показать карты",
+    backToMenu:"В меню", playAgain:"Играть снова",
+    winnerTitle:"Победа!", winnerSub:"{name} остался без карт первым!",
+    drawTitle:"Ничья", drawSub:"Карты закончились у всех одновременно.",
+    durakTitle:"Игра окончена", durakSub:"{name} — дурак!",
+    thinking:"думает…", yourHand:"Ваши карты", handOf:"Карты игрока {name}",
+    tableEmptyAttack:"Выберите карту для хода",
+    mustBeat:"Отбейтесь картой или возьмите",
+    canThrowOrDone:"Подкиньте карту или нажмите «Бита»",
+    waitTurn:"Ход другого игрока",
+    exitConfirm:"Выйти из игры? Прогресс партии будет потерян.",
+    yes:"Да", no:"Отмена"
+  },
+  kbd: {
+    title:"Куэзыр", subtitle:"джэгу пхъэрышэ",
+    menuPlay:"Джэгун", menuSettings:"ЩIыпIэ убзыхукIэхэр", menuProfile:"Профиль", menuRules:"Хабзэхэр",
+    menuHint:"уи профиль",
+    playModeTitle:"Джэгун", vsBots:"Ботхэм пэджэжу", localPlay:"Мыбдежу (телефон зы)",
+    botsSetupTitle:"Ботхэм пэджэжу", botCountLabel:"Ботхэм я бжыгъэ", startGame:"Джэгур къэгъэжэ",
+    localSetupTitle:"Мыбдежрей джэгу", playerCountLabel:"ДжэгуакIуэхэм я бжыгъэ", startGame2:"Джэгур къэгъэжэ",
+    settingsTitle:"ЩIыпIэ убзыхукIэхэр", langLabel:"Бзэ",
+    langNote:"КъэбэрдейбзэкIэ зэдзэкIар и пэжыпIэкIэ къэлъытэгъуейщ — жыжьэу зэпкърахыжыну хуеймэ, бзэр зыщIэ цIыхум еплъытэну хуейщ.",
+    profileTitle:"Профиль", nicknameLabel:"Уи цIэ джэгуакIуэ", avatarLabel:"Сурэт", saveProfile:"Егъэтын",
+    rulesTitle:"Хабзэхэр",
+    rulesBody:"<b>Джэгум и мурад</b> — уи пхъэрышэ псори нэхъ пасэу утIыпщыжын. Псоми пхъэрышэ иIэжкъым, ауэ зым иIэ хъумэ — ар «делэщ».<br><br>" +
+      "<b>Пхъэрышэ</b> — 36-рэ (хым щыщIэдзауэ тузым нэс). Дэтхэнэ джэгуакIуэми 6-6 иратыж, иужь дыдэ пхъэрышэр къызэIуахри — абы и джэрпэджэжыр козырь мэхъу.<br><br>" +
+      "<b>ДжэгукIэ</b>: зэуэным пхъэрышэ трелъхьэ. Къызэрихьэну хуейм абы нэхъ ин джэрпэджэжкIэ е (пхъэрышэр козырь щымыхъумэ) сыт хуэдэ козырьи иубыдын хуейщ.<br><br>" +
+      "Иубыдмэ, зэуэным пхъэрышэ нэгъуэщI хигъэхьэ хъунущ (6-м нэхърэ мыхьэлей). «Бита» зыхуа щIым, пхъэрышэхэр Iуахыжри, джэгур адэкIэ макIуэ.<br><br>" +
+      "Иубыдыфакъым — зэрыт пхъэрышэ псори и Iэпэгъуэм еубыд.<br><br>" +
+      "Раундыр иухыху, джэгуакIуэ псори пхъэрышэ 6-м нагъэс хащIыкI. Пхъэрышэр иухмэ, аргуэру Iэпэгъуэ пхъэрышэкIэ джэгур макIуэ. Пхъэрышэ зиIэж джэгуакIуэ иужьрейр «делэщ».",
+    yourTurn:"Уи джэгукIэщ", attack:"Джэгу", defend:"Уеубыд", take:"Къащтэ", beatDone:"Бита", pass:"Пас",
+    deck:"пхъэрышэм", trump:"козырь",
+    you:"Уэ", bot:"Бот", player:"ДжэгуакIуэ",
+    passHint:"Телефоныр джэгуакIуэ мыбы иратыж", passReveal:"Пхъэрышэхэр къэгъэлъагъуэ",
+    backToMenu:"Меню", playAgain:"Аргуэру джэгун",
+    winnerTitle:"ТекIуэныгъэ!", winnerSub:"{name} пэ изухыу пхъэрышэ имыIэжу къэнащ!",
+    drawTitle:"Зэхуэдэ", drawSub:"Псоми зэуэ пхъэрышэ иIэжкъым.",
+    durakTitle:"Джэгур ухащ", durakSub:"{name} — делэщ!",
+    thinking:"мэгупсысэ…", yourHand:"Уи пхъэрышэхэр", handOf:"{name} и пхъэрышэхэр",
+    tableEmptyAttack:"Джэгуну пхъэрышэ къыхэхы",
+    mustBeat:"ПхъэрышэкIэ уеубыд е къащтэ",
+    canThrowOrDone:"Пхъэрышэ хэгъэхьэ е «Бита» тегъэуэ",
+    waitTurn:"Нэгъуэщl джэгуакIуэм и джэгукIэщ",
+    exitConfirm:"Джэгум ущIэкIыну ухуеймэ? Джэгур кIуэдынущ.",
+    yes:"Арэ", no:"Къэгъэнэ"
+  }
+};
+
+const AVATARS = ["🐺","🦅","🐎","⚔️","🛡️","🏔️"];
+const SUITS = ["♠","♥","♦","♣"];
+const RED_SUITS = ["♥","♦"];
+const RANK_LABELS = {6:"6",7:"7",8:"8",9:"9",10:"10",11:"В",12:"Д",13:"К",14:"Т"};
+
+/* ---------------- persistent state ---------------- */
+function safeGet(key, fallback){
+  try{ const v = localStorage.getItem(key); return v===null? fallback : JSON.parse(v); }
+  catch(e){ return fallback; }
+}
+function safeSet(key, val){
+  try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){ /* ignore, memory-only fallback */ }
+}
+
+let profile = safeGet('kouezyr_profile', {nickname:"Игрок", avatar:0});
+let lang = safeGet('kouezyr_lang', 'ru');
+
+function T(key){ return (TRANSLATIONS[lang] && TRANSLATIONS[lang][key]) || TRANSLATIONS.ru[key] || key; }
+
+function applyI18n(){
+  document.querySelectorAll('[id^="t_"]').forEach(el=>{
+    const key = el.id.slice(2);
+    if(TRANSLATIONS.ru[key] !== undefined){
+      el.innerHTML = T(key);
+    }
+  });
+  document.getElementById('rulesBody').innerHTML = T('rulesBody');
+  document.getElementById('langRuBtn').classList.toggle('active', lang==='ru');
+  document.getElementById('langKbdBtn').classList.toggle('active', lang==='kbd');
+  document.title = T('title');
+  refreshMenuProfile();
+  if(document.getElementById('gameScreen').classList.contains('active')){
+    renderGame();
+  }
+}
+
+function refreshMenuProfile(){
+  document.getElementById('menuAvatar').textContent = AVATARS[profile.avatar] || AVATARS[0];
+  document.getElementById('menuNickname').textContent = profile.nickname || "Игрок";
+}
+
+/* ---------------- navigation ---------------- */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='profileScreen') openProfileScreen();
+}
+
+function openProfileScreen(){
+  document.getElementById('nicknameInput').value = profile.nickname;
+  const grid = document.getElementById('avatarGrid');
+  grid.innerHTML = '';
+  AVATARS.forEach((a,i)=>{
+    const d = document.createElement('div');
+    d.className = 'avatar-opt' + (i===profile.avatar?' selected':'');
+    d.textContent = a;
+    d.onclick = ()=>{
+      grid.querySelectorAll('.avatar-opt').forEach(x=>x.classList.remove('selected'));
+      d.classList.add('selected');
+      d.dataset.chosen = '1';
+      grid.dataset.selectedIndex = i;
+    };
+    grid.appendChild(d);
+  });
+  grid.dataset.selectedIndex = profile.avatar;
+}
+
+function saveProfile(){
+  const nick = document.getElementById('nicknameInput').value.trim();
+  profile.nickname = nick || "Игрок";
+  const grid = document.getElementById('avatarGrid');
+  profile.avatar = parseInt(grid.dataset.selectedIndex || '0', 10);
+  safeSet('kouezyr_profile', profile);
+  refreshMenuProfile();
+  showToast(lang==='ru' ? 'Сохранено' : 'Егъэтащ');
+  go('menuScreen');
+}
+
+function setLang(l){
+  lang = l;
+  safeSet('kouezyr_lang', lang);
+  applyI18n();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+/* ---------------- setup screens ---------------- */
+let botCount = 1;
+function changeBots(d){
+  botCount = Math.min(3, Math.max(1, botCount+d));
+  document.getElementById('botCountVal').textContent = botCount;
+}
+let localPlayerCount = 2;
+function changePlayers(d){
+  localPlayerCount = Math.min(4, Math.max(2, localPlayerCount+d));
+  document.getElementById('playerCountVal').textContent = localPlayerCount;
+}
+
+/* =========================================================
+   GAME ENGINE
+========================================================= */
+let G = null; // game state
+
+function makeDeck(){
+  const deck = [];
+  for(const s of SUITS){
+    for(let r=6;r<=14;r++){
+      deck.push({suit:s, rank:r});
+    }
+  }
+  for(let i=deck.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]] = [deck[j],deck[i]];
+  }
+  return deck;
+}
+
+function cardBeats(atk, def, trumpSuit){
+  if(def.suit === atk.suit) return def.rank > atk.rank;
+  if(def.suit === trumpSuit && atk.suit !== trumpSuit) return true;
+  return false;
+}
+
+function startGame(mode){
+  const deck = makeDeck();
+  const trumpCard = deck[deck.length-1];
+  const trumpSuit = trumpCard.suit;
+
+  let players = [];
+  if(mode === 'bots'){
+    players.push({id:0, human:true, name:profile.nickname, avatar:AVATARS[profile.avatar], hand:[], isBot:false});
+    for(let i=0;i<botCount;i++){
+      players.push({id:i+1, human:false, name:(T('bot')+' '+(i+1)), avatar: AVATARS[(profile.avatar+1+i)%AVATARS.length], hand:[], isBot:true});
+    }
+  } else {
+    for(let i=0;i<localPlayerCount;i++){
+      players.push({id:i, human:true, name:(T('player')+' '+(i+1)), avatar: AVATARS[i%AVATARS.length], hand:[], isBot:false, local:true});
+    }
+  }
+
+  // deal
+  for(let round=0; round<6; round++){
+    for(const p of players){
+      p.hand.push(deck.pop());
+    }
+  }
+
+  // determine first attacker: lowest trump
+  let attackerIdx = 0;
+  let bestRank = 99;
+  players.forEach((p,idx)=>{
+    p.hand.forEach(c=>{
+      if(c.suit===trumpSuit && c.rank<bestRank){ bestRank=c.rank; attackerIdx=idx; }
+    });
+  });
+
+  G = {
+    mode, players, deck, trumpSuit, trumpCard,
+    attackerIdx,
+    defenderIdx: nextActiveIdx(players, attackerIdx),
+    table: [], // {a:card, d:card|null}
+    finished: [], // player ids that are out (winners in order)
+    phase: 'attack', // attack | defend | roundEndAnim
+    revealedFor: null, // for local mode pass-device: which player index currently revealed
+    message: '',
+    over: false
+  };
+  document.getElementById('passOverlay').classList.remove('active');
+  document.getElementById('resultOverlay').classList.remove('active');
+  go('gameScreen');
+  if(mode==='local'){
+    requestReveal(G.attackerIdx, ()=>{ renderGame(); maybeBotAct(); });
+  } else {
+    renderGame();
+    maybeBotAct();
+  }
+}
+
+function nextActiveIdx(players, idx){
+  let n = players.length;
+  for(let step=1; step<=n; step++){
+    const cand = (idx+step)%n;
+    if(!G || !G.finished.includes(players[cand].id)) return cand;
+    if(!players[cand].__removed) return cand;
+  }
+  return (idx+1)%n;
+}
+
+function activePlayers(){
+  return G.players.filter(p=>!G.finished.includes(p.id));
+}
+
+/* ----- drawing ----- */
+function refillHands(){
+  const order = [];
+  let idx = G.attackerIdx;
+  for(let i=0;i<G.players.length;i++){
+    order.push((G.attackerIdx+i)%G.players.length);
+  }
+  for(const idx2 of order){
+    const p = G.players[idx2];
+    if(G.finished.includes(p.id)) continue;
+    while(p.hand.length<6 && G.deck.length>0){
+      p.hand.push(G.deck.pop());
+    }
+  }
+  checkFinishedPlayers();
+}
+
+function checkFinishedPlayers(){
+  if(G.deck.length>0) return;
+  G.players.forEach(p=>{
+    if(p.hand.length===0 && !G.finished.includes(p.id)){
+      G.finished.push(p.id);
+    }
+  });
+}
+
+function totalCardsLeftPlayers(){
+  return G.players.filter(p=>!G.finished.includes(p.id)).length;
+}
+
+function endGameCheck(){
+  if(G.deck.length>0) return false;
+  const remaining = G.players.filter(p=>!G.finished.includes(p.id));
+  if(remaining.length<=1){
+    G.over = true;
+    if(remaining.length===0){
+      showResult(T('drawTitle'), T('drawSub'));
+    } else {
+      const loser = remaining[0];
+      showResult(T('durakTitle'), T('durakSub').replace('{name}', loser.name));
+    }
+    return true;
+  }
+  return false;
+}
+
+function showResult(title, sub){
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSub').textContent = sub;
+  document.getElementById('resultOverlay').classList.add('active');
+}
+
+function restartToMenu(){
+  document.getElementById('resultOverlay').classList.remove('active');
+  go('menuScreen');
+}
+
+/* ----- round end / turn advance ----- */
+function endRound(defenderTook){
+  const defender = G.players[G.defenderIdx];
+  if(defenderTook){
+    G.table.forEach(pair=>{
+      defender.hand.push(pair.a);
+      if(pair.d) defender.hand.push(pair.d);
+    });
+  }
+  G.table = [];
+  refillHands();
+
+  if(checkFirstFinishers()) { if(endGameCheck()) return; }
+
+  let newAttackerIdx;
+  if(defenderTook){
+    newAttackerIdx = nextActiveIdx(G.players, G.defenderIdx);
+  } else {
+    newAttackerIdx = nextActiveIdx(G.players, G.defenderIdx);
+  }
+  G.attackerIdx = newAttackerIdx;
+  G.defenderIdx = nextActiveIdx(G.players, G.attackerIdx);
+  G.phase = 'attack';
+
+  if(endGameCheck()) return;
+
+  if(G.mode==='local'){
+    requestReveal(G.attackerIdx, ()=>{ renderGame(); maybeBotAct(); });
+  } else {
+    renderGame();
+    maybeBotAct();
+  }
+}
+
+function checkFirstFinishers(){
+  let any=false;
+  if(G.deck.length===0){
+    G.players.forEach(p=>{
+      if(p.hand.length===0 && !G.finished.includes(p.id)){ G.finished.push(p.id); any=true; }
+    });
+  }
+  return any;
+}
+
+/* ----- attack / defend actions ----- */
+function tableOpenCount(){
+  return G.table.filter(p=>!p.d).length;
+}
+function tableRanks(){
+  const set = new Set();
+  G.table.forEach(p=>{ set.add(p.a.rank); if(p.d) set.add(p.d.rank); });
+  return set;
+}
+function maxAttackCards(){
+  const defender = G.players[G.defenderIdx];
+  return Math.min(6, defender.hand.length + G.table.filter(p=>p.d).length);
+}
+
+function canPlayAttackCard(player, card){
+  if(G.table.length===0) return true;
+  if(G.table.length >= maxAttackCards()) return false;
+  if(tableOpenCount() > 0) return false; // must wait defender to resolve
+  return tableRanks().has(card.rank);
+}
+
+function playAttackCard(playerIdx, cardIndex){
+  const p = G.players[playerIdx];
+  const card = p.hand[cardIndex];
+  if(!canPlayAttackCard(p, card)) return false;
+  p.hand.splice(cardIndex,1);
+  G.table.push({a:card, d:null});
+  G.phase = 'defend';
+  return true;
+}
+
+function canDefend(card, atkCard){
+  return cardBeats(atkCard, card, G.trumpSuit);
+}
+
+function playDefendCard(cardIndex, pairIndex){
+  const defender = G.players[G.defenderIdx];
+  const card = defender.hand[cardIndex];
+  const pair = G.table[pairIndex];
+  if(pair.d) return false;
+  if(!canDefend(card, pair.a)) return false;
+  defender.hand.splice(cardIndex,1);
+  pair.d = card;
+  G.phase = 'attack';
+  return true;
+}
+
+/* =========================================================
+   RENDERING
+========================================================= */
+function cardHTML(c, extraClass){
+  const red = RED_SUITS.includes(c.suit);
+  return `<div class="card ${extraClass||''} ${red?'red':''}"><div>${RANK_LABELS[c.rank]}</div><div class="suit">${c.suit}</div></div>`;
+}
+
+function renderGame(){
+  if(!G) return;
+  const me = currentViewerIdx();
+  const meP = G.players[me];
+
+  // top bar
+  document.getElementById('gameStatusLabel').textContent =
+    `${T('trump')}: ${G.trumpSuit}`;
+
+  // opponents row = everyone except viewer, or in bots mode everyone except human
+  const oppRow = document.getElementById('oppRow');
+  oppRow.innerHTML = '';
+  G.players.forEach((p, idx)=>{
+    if(idx===me && G.mode==='bots') return; // hide own card in opp row for bots mode
+    if(G.mode==='local' && idx===me) return;
+    const div = document.createElement('div');
+    div.className = 'opp' + (idx===G.attackerIdx || idx===G.defenderIdx ? ' active-turn':'');
+    const finished = G.finished.includes(p.id);
+    div.innerHTML = `<div class="av">${p.avatar}</div>
+      <div>${p.name}${idx===G.attackerIdx?' ⚔️':(idx===G.defenderIdx?' 🛡️':'')}</div>
+      <div class="cnt">${finished?'✓':p.hand.length}</div>`;
+    oppRow.appendChild(div);
+  });
+
+  // deck stack visual
+  const deckStack = document.getElementById('deckStack');
+  deckStack.innerHTML = G.deck.length>0 ? '<div class="mini-card"></div>' : '';
+  const trumpEl = document.getElementById('trumpCardEl');
+  const red = RED_SUITS.includes(G.trumpCard.suit);
+  trumpEl.innerHTML = `<span style="transform:rotate(-90deg);color:${red?'var(--red)':'var(--ink)'}">${RANK_LABELS[G.trumpCard.rank]}${G.trumpCard.suit}</span>`;
+  document.getElementById('deckCountLabel').textContent = `${G.deck.length} ${T('deck')}`;
+
+  // table
+  const tableArea = document.getElementById('tableArea');
+  tableArea.innerHTML = '';
+  G.table.forEach(pair=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'pair';
+    wrap.innerHTML = cardHTML(pair.a, 'on-table');
+    if(pair.d){
+      wrap.innerHTML += cardHTML(pair.d, 'on-table defend-card');
+    }
+    tableArea.appendChild(wrap);
+  });
+
+  // message
+  document.getElementById('msgBanner').textContent = computeMessage(me);
+
+  // hand
+  renderHand(me);
+
+  // action buttons
+  renderActions(me);
+}
+
+function currentViewerIdx(){
+  if(G.mode==='bots') return 0; // human is always player 0
+  return G.revealedFor !== null ? G.revealedFor : G.attackerIdx;
+}
+
+function computeMessage(viewerIdx){
+  const isAttacker = viewerIdx===G.attackerIdx;
+  const isDefender = viewerIdx===G.defenderIdx;
+  if(!isAttacker && !isDefender) return T('waitTurn');
+  if(isDefender){
+    if(tableOpenCount()>0) return T('mustBeat');
+    return T('canThrowOrDone');
+  }
+  if(isAttacker){
+    if(G.table.length===0) return T('tableEmptyAttack');
+    if(tableOpenCount()>0) return T('waitTurn');
+    return T('canThrowOrDone');
+  }
+  return '';
+}
+
+let selectedHandIndex = null;
+
+function renderHand(viewerIdx){
+  const p = G.players[viewerIdx];
+  const handArea = document.getElementById('handArea');
+  handArea.innerHTML = '';
+  document.getElementById('handOwnerLabel').textContent =
+    (viewerIdx===0 && G.mode==='bots') ? T('yourHand') : T('handOf').replace('{name}', p.name);
+  document.getElementById('handCountLabel').textContent = p.hand.length + ' 🂠';
+
+  const isAttacker = viewerIdx===G.attackerIdx;
+  const isDefender = viewerIdx===G.defenderIdx;
+  const humanTurnHere = (p.human) && (isAttacker || isDefender) && !G.over;
+
+  p.hand.forEach((c,i)=>{
+    const el = document.createElement('div');
+    const red = RED_SUITS.includes(c.suit);
+    let playable = false;
+    if(humanTurnHere){
+      if(isDefender && tableOpenCount()>0) playable = true;
+      else if(isAttacker && tableOpenCount()===0) playable = canPlayAttackCard(p,c);
+    }
+    el.className = `card ${red?'red':''} ${playable?'playable':''} ${selectedHandIndex===i?'selected':''}`;
+    el.innerHTML = `<div>${RANK_LABELS[c.rank]}</div><div class="suit">${c.suit}</div>`;
+    if(playable){
+      el.onclick = ()=> onHandCardClick(viewerIdx, i);
+    }
+    handArea.appendChild(el);
+  });
+}
+
+function onHandCardClick(viewerIdx, cardIndex){
+  if(G.over) return;
+  const isDefender = viewerIdx===G.defenderIdx;
+  if(isDefender && tableOpenCount()>0){
+    // find first open pair
+    const pairIdx = G.table.findIndex(pr=>!pr.d);
+    const card = G.players[viewerIdx].hand[cardIndex];
+    if(!canDefend(card, G.table[pairIdx].a)){
+      showToast(lang==='ru'?'Так нельзя бить':'Апхуэдэу узэпэувыфкъым');
+      return;
+    }
+    playDefendCard(cardIndex, pairIdx);
+    afterHumanMove();
+    return;
+  }
+  // attacking / throw-in
+  playAttackCard(viewerIdx, cardIndex);
+  afterHumanMove();
+}
+
+function whoseTurnIdx(){
+  return tableOpenCount()>0 ? G.defenderIdx : G.attackerIdx;
+}
+
+function afterHumanMove(){
+  if(G.mode==='local' && !G.over){
+    const need = whoseTurnIdx();
+    if(need !== G.revealedFor){
+      requestReveal(need, renderGame);
+      return;
+    }
+  }
+  renderGame();
+  maybeBotAct();
+}
+
+function renderActions(viewerIdx){
+  const takeBtn = document.getElementById('takeBtn');
+  const doneBtn = document.getElementById('doneBtn');
+  const passBtn = document.getElementById('passBtn');
+  takeBtn.style.display='none'; doneBtn.style.display='none'; passBtn.style.display='none';
+  if(G.over) return;
+  const p = G.players[viewerIdx];
+  if(!p.human) return;
+
+  if(viewerIdx===G.defenderIdx){
+    if(G.table.length>0){
+      takeBtn.style.display='inline-flex';
+      takeBtn.textContent = T('take');
+      takeBtn.onclick = ()=>{ playerTake(); };
+    }
+  }
+  if(viewerIdx===G.attackerIdx && tableOpenCount()===0 && G.table.length>0){
+    doneBtn.style.display='inline-flex';
+    doneBtn.textContent = T('beatDone');
+    doneBtn.onclick = ()=>{ playerDone(); };
+  }
+}
+
+function playerTake(){
+  if(G.over) return;
+  endRound(true);
+}
+function playerDone(){
+  if(G.over) return;
+  endRound(false);
+}
+function playerPass(){}
+
+/* ----- local mode pass-device overlay ----- */
+function requestReveal(playerIdx, cb){
+  const p = G.players[playerIdx];
+  if(G.mode!=='local'){ cb(); return; }
+  G.revealedFor = null;
+  document.getElementById('passAvatar').textContent = p.avatar;
+  document.getElementById('passName').textContent = p.name;
+  document.getElementById('passOverlay').classList.add('active');
+  window.__pendingReveal = ()=>{ G.revealedFor = playerIdx; cb(); };
+}
+function revealHand(){
+  document.getElementById('passOverlay').classList.remove('active');
+  if(window.__pendingReveal) window.__pendingReveal();
+}
+
+function confirmExit(){
+  if(confirm(T('exitConfirm'))){
+    go('menuScreen');
+  }
+}
+function toggleRulesPopup(){
+  alert(T('rulesBody').replace(/<br\s*\/?>/g,'\n').replace(/<[^>]+>/g,''));
+}
+
+/* =========================================================
+   BOT AI
+========================================================= */
+function botChooseAttack(p){
+  const legal = p.hand.filter(c=>canPlayAttackCard(p,c));
+  if(legal.length===0) return null;
+  legal.sort((a,b)=>{
+    const at = a.suit===G.trumpSuit, bt = b.suit===G.trumpSuit;
+    if(at!==bt) return at?1:-1;
+    return a.rank-b.rank;
+  });
+  return legal[0];
+}
+function botChooseDefend(p, atkCard){
+  const legal = p.hand.filter(c=>canDefend(c, atkCard));
+  if(legal.length===0) return null;
+  legal.sort((a,b)=>{
+    const at = a.suit===G.trumpSuit, bt = b.suit===G.trumpSuit;
+    if(at!==bt) return at?1:-1;
+    return a.rank-b.rank;
+  });
+  return legal[0];
+}
+
+function maybeBotAct(){
+  if(G.over) return;
+  const attacker = G.players[G.attackerIdx];
+  const defender = G.players[G.defenderIdx];
+
+  if(defender.isBot && tableOpenCount()>0){
+    setTimeout(()=>{
+      if(G.over) return;
+      const pairIdx = G.table.findIndex(pr=>!pr.d);
+      const atkCard = G.table[pairIdx].a;
+      const choice = botChooseDefend(defender, atkCard);
+      if(!choice){
+        endRound(true);
+        return;
+      }
+      const idx = defender.hand.indexOf(choice);
+      defender.hand.splice(idx,1);
+      G.table[pairIdx].d = choice;
+      G.phase='attack';
+      renderGame();
+      maybeBotAct();
+    }, 700);
+    return;
+  }
+
+  if(attacker.isBot && tableOpenCount()===0){
+    setTimeout(()=>{
+      if(G.over) return;
+      const choice = botChooseAttack(attacker);
+      if(!choice){
+        endRound(false);
+        return;
+      }
+      const idx = attacker.hand.indexOf(choice);
+      attacker.hand.splice(idx,1);
+      G.table.push({a:choice, d:null});
+      G.phase='defend';
+      renderGame();
+      maybeBotAct();
+    }, 700);
+    return;
+  }
+}
+
+/* =========================================================
+   INIT
+========================================================= */
+applyI18n();
+</script>
+</body>
+</html>
